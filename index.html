@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+		<title>Find valid tracking numbers</title>
+		<style type="text/css">
+		.header {
+			font-weight: bold;
+		}
+		
+		.big {
+			font-weight: bold;
+			font-size: 24px;
+		}
+		
+		.sub {
+			font-style: italic;
+			font-size: 10px;
+		}
+		
+		body {
+			margin-left: 50px;
+		}
+		</style>
+		<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+		<script type="text/javascript">
+		function validateUPUTrackingNumber(tracking) {
+			if (tracking.length != 13) {
+				return false
+			}
+
+			let weight = [8, 6, 4, 2, 3, 5, 9, 7]
+			let sum = 0
+
+			for (let i = 0; i < weight.length; i++) {
+				let num = parseInt(tracking[2 + i])
+				if (isNaN(num)) {
+					return false
+				}
+				sum += num * weight[i]
+			}
+
+			sum = 11 - (sum % 11)
+			if (sum == 10) {
+				sum = 0
+			} else if (sum == 11) {
+				sum = 5
+			}
+
+			let check = parseInt(tracking[10])
+			if (isNaN(check)) {
+				return false
+			}
+
+			return check === sum
+		}
+
+		$(function() {
+			$("#find").click(function() {
+				let inputs = $("#input").val().split("\n")
+				let output = ""
+
+				for (let input of inputs) {
+					input = input.trim()
+					if (input.length != 12) {
+						continue
+					}
+					for (let i = 2; i < 12; i++) {
+						let head = input.substring(0, i)
+						let tail = input.substring(i, 12)
+						for (let j = 0; j < 10; j++) {
+							let num = head + j.toString() + tail
+							if (validateUPUTrackingNumber(num)) {
+								output += num + "\n"
+							}
+						}
+					}
+				}
+
+				$("#output").val(output)
+			});
+		});
+		</script>
+	</head>
+	<body>
+		<p><span class="big">Find valid tracking numbers</span></p>
+		<table>
+			<tr>
+				<td class="header">Input</td>
+				<td class="header">Output</td>
+			</tr>
+			<tr>
+				<td><textarea id="input" rows="8" cols="50"></textarea></td>
+				<td><textarea id="output" rows="8" cols="50" readonly></textarea></td>
+			</tr>
+			<tr>
+				<td><button id="find">Find!</button></td>
+			</tr>
+		</table>
+		<p class="sub">Created by <a href="https://vi.satou.ch/">Visatouch</a></p>
+	</body>
+</html>
