@@ -2,7 +2,7 @@
 Got a tracking number but it's missing a single digit? Let this tool help you!
 
 ## Usage
-Go to https://xerodotc.github.io/find-valid-tracking-number/ to access this project.
+Go to https://xerodotc.github.io/find-valid-tracking-numbers/ to access this project.
 
 Type in a tracking number with a missing digit in the input field.
 Valid tracking numbers will be generated at the output field.
