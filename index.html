@@ -8,60 +8,31 @@
 		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+		<script src="./script.js"></script>
 		<script type="text/javascript">
-		function validateUPUTrackingNumber(tracking) {
-			if (tracking.length != 13) {
-				return false
-			}
-
-			let weight = [8, 6, 4, 2, 3, 5, 9, 7]
-			let sum = 0
-
-			for (let i = 0; i < weight.length; i++) {
-				let num = parseInt(tracking[2 + i])
-				if (isNaN(num)) {
-					return false
-				}
-				sum += num * weight[i]
-			}
-
-			sum = 11 - (sum % 11)
-			if (sum == 10) {
-				sum = 0
-			} else if (sum == 11) {
-				sum = 5
-			}
-
-			let check = parseInt(tracking[10])
-			if (isNaN(check)) {
-				return false
-			}
-
-			return check === sum
-		}
-
 		$(function() {
 			$("#find").click(function() {
 				let inputs = $("#input").val().split("\n")
 				let output = ""
 
+				let results = []
+
 				for (let input of inputs) {
 					input = input.trim()
-					if (input.length != 12) {
-						continue
-					}
-					for (let i = 2; i < 12; i++) {
-						let head = input.substring(0, i)
-						let tail = input.substring(i, 12)
-						for (let j = 0; j < 10; j++) {
-							let num = head + j.toString() + tail
-							if (validateUPUTrackingNumber(num)) {
-								output += num + "\n"
-							}
-						}
+					if (input.length === 12) {
+						// missing-one error
+						let thisResults = generateUPUTrackingNumbersFrom12(input)
+						results = results.concat(thisResults)
+					} else if (input.length === 13) {
+						// off-by-one error
+						let thisResults = generateUPUTrackingNumbersFrom13(input)
+						results = results.concat(thisResults)
 					}
 				}
 
+				results = filterDuplicates(results)
+
+				output = results.join("\n")
 				$("#output").val(output)
 			});
 		});
